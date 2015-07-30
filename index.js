@@ -1,21 +1,4 @@
-// Setting up litlte HTML sesh, just to show it is alive...
-var express = require('express');
-var app = express();
-
-app.set('port', (process.env.PORT || 5000));
-
-app.use(express.static(__dirname + '/public'));
-
-app.get('/', function(request, response) {
-    response.render('index.html');
-});
-
-app.listen(app.get('port'), function() {
-  console.log('Node app is running on port', app.get('port'));
-});
-
-
-// Slack Bot about to start.
+// Slack Bot template
 var Slack, autoMark, autoReconnect, slack, token, Responder, listening, Responder, botId;
 Slack = require('slack-client');
 Responder = require('./responder.js');
