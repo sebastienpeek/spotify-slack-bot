@@ -16,8 +16,9 @@ app.listen(app.get('port'), function() {
 
 
 // Slack Bot about to start.
-var Slack, autoMark, autoReconnect, slack, token, Responder, listening;
+var Slack, autoMark, autoReconnect, slack, token, Responder, listening, Responder;
 Slack = require('slack-client');
+Responder = require('./responder.js');
 token = 'xoxb-8424019431-t2XR3PJdVOM2FKzaAM96koba';
 autoReconnect = true;
 autoMark = true;
@@ -41,7 +42,14 @@ slack.on('message', function(message) {
   	channelName = channelName + (channel ? channel.name : 'UNKNOWN_CHANNEL');
   	userName = (user != null ? user.name : void 0) != null ? "@" + user.name : "UNKNOWN_USER";
 
-  	console.log("slackMessage() " + type + " " + channelName + " " + userName + " " + ts + " \"" + text + "\"");
+  	responder = new Responder();
+    responder.respondToMessage(message, user, slack.self.name, function(res) {
+      var response = res;
+      if (response != null) {
+        channel.send(response);
+        return console.log("@" + slack.self.name + " responded with \"" + response + "\"");
+      }
+    });
 
 });
 
