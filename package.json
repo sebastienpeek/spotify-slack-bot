@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/sebastienpeek/spotify-slack-bot",
   "dependencies": {
+    "applescript": "^1.0.0",
     "express": "^4.13.1",
     "restify": "^3.0.3",
     "slack-client": "^1.4.1"
