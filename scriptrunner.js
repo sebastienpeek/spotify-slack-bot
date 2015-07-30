@@ -8,28 +8,19 @@ var ScriptRunner = (function() {
 		track: {
 		    file: 'get_track.applescript'
 		},
-		volumeUp:
-		    'tell application "Spotify" to set sound volume to (sound volume + 10)',
-		volumeDown:
-		    'tell application "Spotify" to set sound volume to (sound volume - 10)',
-		setVolume:
-		    'tell application "Spotify" to set sound volume to %s',
+		state: {
+			file: 'get_state.applescript'
+		},
 		play:
 		    'tell application "Spotify" to play',
-		playTrack:
+		playSong:
 		    'tell application "Spotify" to play track "%s"',
-		playPause:
-		    'tell application "Spotify" to playpause',
 		pause:
 		    'tell application "Spotify" to pause',
 		next:
 		    'tell application "Spotify" to next track',
 		previous:
-		    'tell application "Spotify" to previous track',
-		jumpTo:
-		    'tell application "Spotify" to set player position to %s',
-		isRunning:
-		    'get running of application "Spotify"'
+		    'tell application "Spotify" to previous track'
 	};
 
 	var scriptsPath = __dirname + '/scripts/';
@@ -70,9 +61,38 @@ var ScriptRunner = (function() {
 	    };
 	};
 
+	// Spotify Information
+
+	ScriptRunner.prototype.getState = function(callback) {
+		return this.execScript('state', this.createJSONResponseHandler(callback));
+	}
+
 	ScriptRunner.prototype.getTrack = function(callback) {
 		return this.execScript('track', this.createJSONResponseHandler(callback));
 	};
+
+	// Media Controls
+
+	ScriptRunner.prototype.play = function(callback) {
+		return this.execScript('play', callback);
+	}
+
+	ScriptRunner.prototype.playSong = function(track, callback) {
+		console.log("track() - " + track);
+		return this.execScript('playSong', track, callback);
+	}
+
+	ScriptRunner.prototype.stop = function(callback) {
+		return this.execScript('pause', callback);
+	}
+
+	ScriptRunner.prototype.next = function(callback) {
+		return this.execScript('next', callback);
+	}
+
+	ScriptRunner.prototype.previous = function(callback) {
+		return this.execScript('previous', callback);
+	}
 
 });
 
