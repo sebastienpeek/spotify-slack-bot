@@ -42,7 +42,7 @@ Responder = (function() {
 					} else if (~text.indexOf("start song") || (~text.indexOf("start playing")) || (~text.indexOf("play song"))) {
 
 						// Check to make sure the user isn't defining what track to play next!
-						if (~text.indexOf("spotify:track")) {
+						if (~text.indexOf("spotify:")) {
 							var trackId = originalText.replace(/.*\<|\>/gi,'');
 							
 							scriptrunner.playSong(trackId, function(callback) {
