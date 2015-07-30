@@ -1,8 +1,10 @@
 var Responder;
 
-var spotify = require('./scriptrunner.js');
+var ScriptRunner = require('./scriptrunner.js');
 
 Responder = (function() {
+
+	var scriptrunner = new ScriptRunner();
 
 	Responder.prototype.respondToMessage = function(message, userObject, slackName, res) {
 		console.log("respondToMessage() - " + message);
@@ -16,14 +18,15 @@ Responder = (function() {
 
 				if (~text.indexOf("u08cg0kcp")) {
 					// message to spotify bot directly
-					console.log('talking to me directly...');
 					if (~text.indexOf("now playing") || ~text.indexOf("currently playing")) {
-						spotify.getTrack(function(err, track){ 
+						scriptrunner.getTrack(function(err, track){ 
 							var artist = track.artist;
 							var name = track.name;
 							res("Currently listening to " + name + " by " + artist);
 						});
-					}		
+					} else if (~text.indexOf("play song")) {
+						scriptrunner.play();
+					}
 				};
 		} else {
 			return null;
