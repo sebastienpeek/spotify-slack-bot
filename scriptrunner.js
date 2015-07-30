@@ -8,9 +8,8 @@ var ScriptRunner = (function() {
 		track: {
 		    file: 'get_track.applescript'
 		},
-		state: {
-			file: 'get_state.applescript'
-		},
+		state:
+			'tell application "Spotify" to player state',
 		play:
 		    'tell application "Spotify" to play',
 		playSong:
@@ -64,7 +63,7 @@ var ScriptRunner = (function() {
 	// Spotify Information
 
 	ScriptRunner.prototype.getState = function(callback) {
-		return this.execScript('state', this.createJSONResponseHandler(callback));
+		return this.execScript('state', callback);
 	}
 
 	ScriptRunner.prototype.getTrack = function(callback) {

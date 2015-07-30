@@ -23,15 +23,14 @@ Responder = (function() {
 					if (~text.indexOf("now playing") || ~text.indexOf("currently playing")) {
 
 						scriptrunner.getState(function(err, state) {
-							var currentState = state.state;
-							if (~currentState.indexOf("play")) {
+							if (~state.indexOf("play")) {
 								scriptrunner.getTrack(function(err, track) { 
 									var artist = track.artist;
 									var name = track.name;
 									res("Currently listening to " + name + " by " + artist);
 								});
 							} else {
-								res("Nothing is currently playing.");
+								res("Spotify is currently "+ state);
 							};
 						})
 
@@ -44,7 +43,6 @@ Responder = (function() {
 						// Check to make sure the user isn't defining what track to play next!
 						if (~text.indexOf("spotify:")) {
 							var trackId = originalText.replace(/.*\<|\>/gi,'');
-							
 							scriptrunner.playSong(trackId, function(callback) {
 								scriptrunner.getTrack(function(err, track) { 
 									var artist = track.artist;
