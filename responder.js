@@ -8,8 +8,10 @@ Responder = (function() {
 
 	Responder.prototype.respondToMessage = function(message, userObject, slackName, res) {
 		console.log("respondToMessage() - " + message);
-		var text;
-		text = message.text.toLowerCase();
+		// Lowercase version for easy parsing
+		var text = message.text.toLowerCase();
+		// Orginal version for track id parsing
+		var originalText = message.text;
 
 		if (message.type === 'message' && 
 			(text != null) && 
@@ -19,13 +21,64 @@ Responder = (function() {
 				if (~text.indexOf("u08cg0kcp")) {
 					// message to spotify bot directly
 					if (~text.indexOf("now playing") || ~text.indexOf("currently playing")) {
-						scriptrunner.getTrack(function(err, track){ 
-							var artist = track.artist;
-							var name = track.name;
-							res("Currently listening to " + name + " by " + artist);
+
+						scriptrunner.getState(function(err, state) {
+							var currentState = state.state;
+							if (~currentState.indexOf("play")) {
+								scriptrunner.getTrack(function(err, track) { 
+									var artist = track.artist;
+									var name = track.name;
+									res("Currently listening to " + name + " by " + artist);
+								});
+							} else {
+								res("Nothing is currently playing.");
+							};
+						})
+
+					} else if (~text.indexOf("stop song") || (~text.indexOf("stop playing"))) {
+						scriptrunner.stop(function(callback) {
+							res("Stopping!");
 						});
-					} else if (~text.indexOf("play song")) {
-						scriptrunner.play();
+					} else if (~text.indexOf("start song") || (~text.indexOf("start playing")) || (~text.indexOf("play song"))) {
+
+						// Check to make sure the user isn't defining what track to play next!
+						if (~text.indexOf("spotify:track")) {
+							var trackId = originalText.replace(/.*\<|\>/gi,'');
+							
+							scriptrunner.playSong(trackId, function(callback) {
+								scriptrunner.getTrack(function(err, track) { 
+									var artist = track.artist;
+									var name = track.name;
+									res("Now playing " + name + " by " + artist);
+								});
+							});	
+						
+						} else {
+							scriptrunner.play(function(callback) {
+								scriptrunner.getTrack(function(err, track) { 
+										var artist = track.artist;
+										var name = track.name;
+										res("Now playing " + name + " by " + artist);
+									});
+							});
+						}
+
+					} else if (~text.indexOf("next song")) {
+						scriptrunner.next(function(callback) {
+							scriptrunner.getTrack(function(err, track) { 
+									var artist = track.artist;
+									var name = track.name;
+									res("Now playing " + name + " by " + artist);
+								});
+						});
+					} else if (~text.indexOf("previous song")) {
+						scriptrunner.previous(function(callback) {
+							scriptrunner.getTrack(function(err, track) { 
+									var artist = track.artist;
+									var name = track.name;
+									res("Now playing " + name + " by " + artist);
+								});
+						});
 					}
 				};
 		} else {
