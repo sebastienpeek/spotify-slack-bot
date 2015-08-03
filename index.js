@@ -2,7 +2,7 @@
 var Slack, autoMark, autoReconnect, slack, token, Responder, listening, Responder, botId;
 Slack = require('slack-client');
 Responder = require('./responder.js');
-token = '';
+token = 'xoxb-8424019431-t2XR3PJdVOM2FKzaAM96koba';
 autoReconnect = true;
 autoMark = true;
 slack = new Slack(token, autoReconnect, autoMark);
@@ -10,7 +10,7 @@ listening = true;
 
 slack.on('open', function() {
   botId = slack.self.id;
-  console.log("Welcome to Slack. You are @" + slack.self.name + " of " + slack.team.name);
+  console.log("Welcome to Slack. You are @" + slack.self.name + " of " + slack.team.name + " with id " + slack.self.id);
 });
 
 slack.on('message', function(message) {
