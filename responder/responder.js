@@ -17,6 +17,10 @@ Responder = (function() {
 		
 		// Is it worth creating different regexes instead of doing indexOf() on the string?
 		var playPattern = new RegExp("^<@" + botId + ">:? (play|search|start)(.*)$");
+		var stopPattern = new RegExp("^<@" + botId + ">:? (stop|stop song|stop playing)$");
+		var currPattern = new RegExp("^<@" + botId + ">:? (now playing|currently playing|current|currently|now)$");
+		var nextPattern = new RegExp("^<@" + botId + ">:? (next|next song|forward|skip)$");
+		var prevPattern = new RegExp("^<@" + botId + ">:? (back|previous song|previous)$");
 
 		if (message.type === 'message' && 
 			(text != null) && 
@@ -25,9 +29,12 @@ Responder = (function() {
 				if (~originalText.indexOf(botId)) {
 
 					// Before we do anything, we should probably check if Spotify is running, right?
-
 					var playMatch = playPattern.exec(originalText);
-					console.log(playMatch);
+					var stopMatch = stopPattern.exec(originalText);
+					var currMatch = currPattern.exec(originalText);
+					var nextMatch = nextPattern.exec(originalText);
+					var prevMatch = prevPattern.exec(originalText);
+
 					if (playMatch != null) {
 						if (playMatch[2] != '') {
 							if (~playMatch[2].indexOf("spotify:")) {
@@ -65,10 +72,9 @@ Responder = (function() {
 								});
 							});
 						}
-					} else {
-						if (~text.indexOf("now playing") || ~text.indexOf("currently playing") || 
-						~text.indexOf("current")) {
-							spotifyScript.getState(function(err, state) {
+					} else if (currMatch != null) {
+
+						spotifyScript.getState(function(err, state) {
 								if (~state.indexOf("playing")) {
 									spotifyScript.getTrack(function(err, track) { 
 										var artist = track.artist;
@@ -79,36 +85,34 @@ Responder = (function() {
 									res("Spotify is currently "+ state);
 								};
 							})
-						} else if (~text.indexOf("stop song") || ~text.indexOf("stop playing") || 
-							~text.indexOf("stop")) {
-								spotifyScript.stop(function(callback) {
-									res("Stopping!");
-								});
-						} else if (~text.indexOf("next song") || ~text.indexOf("next") || 
-							~text.indexOf("forward") || ~text.indexOf("skip")) {
-								spotifyScript.next(function(callback) {
-									spotifyScript.getTrack(function(err, track) { 
+					} else if (stopMatch != null) {
+						spotifyScript.stop(function(callback) {
+							res("Stopping!");
+						});
+					} else if (nextMatch != null) {
+						spotifyScript.next(function(callback) {
+							spotifyScript.getTrack(function(err, track) { 
+								var artist = track.artist;
+								var name = track.name;
+								res("Now playing " + name + " by " + artist);
+							});
+						});
+					} else if (prevMatch != null) {
+						spotifyScript.stop(function(callback) {
+							spotifyScript.previous(function(callback) {
+								spotifyScript.previous(function(callback) {
+									spotifyScript.play(function(callback) {
+										spotifyScript.getTrack(function(err, track) { 
 											var artist = track.artist;
 											var name = track.name;
 											res("Now playing " + name + " by " + artist);
 										});
-								});
-						} else if (~text.indexOf("previous song") || ~text.indexOf("previous") || 
-							~text.indexOf("back")) {
-								spotifyScript.stop(function(callback) {
-									spotifyScript.previous(function(callback) {
-										spotifyScript.previous(function(callback) {
-											spotifyScript.play(function(callback) {
-												spotifyScript.getTrack(function(err, track) { 
-													var artist = track.artist;
-													var name = track.name;
-													res("Now playing " + name + " by " + artist);
-												});
-											})	
-										})
-									})
+									})	
 								})
-						}
+							})
+						})
+					} else {
+						res("I don't know what you're asking me, not yet anyway...");
 					}
 				};
 		} else {

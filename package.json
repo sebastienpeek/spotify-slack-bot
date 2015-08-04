@@ -1,6 +1,6 @@
 {
   "name": "spotify-slack-bot",
-  "version": "1.0.0",
+  "version": "0.2.0",
   "description": "A slack bot to control the Mac version of Spotify.",
   "main": "index.js",
   "scripts": {
