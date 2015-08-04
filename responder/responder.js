@@ -16,10 +16,10 @@ Responder = (function() {
 		var originalText = message.text;
 		
 		// Makes updating what criteria works for bot commands now.
-		var playPattern = new RegExp("^<@" + botId + ">:? (play|search|start)(.*)$");
-		var searchPattern = new RegExp("^@" + botId + ">:? (search|find)(.*)$");
-		var stopPattern = new RegExp("^<@" + botId + ">:? (stop|stop song|stop playing)$");
+		var playPattern = new RegExp("^<@" + botId + ">:? (play|start)(.*)$");
+		var searchPattern = new RegExp("^<@" + botId + ">:? (search|find)(.*)$");
 		var currPattern = new RegExp("^<@" + botId + ">:? (now playing|currently playing|current|currently|now)$");
+		var stopPattern = new RegExp("^<@" + botId + ">:? (stop|stop song|stop playing)$");
 		var nextPattern = new RegExp("^<@" + botId + ">:? (next|next song|forward|skip)$");
 		var prevPattern = new RegExp("^<@" + botId + ">:? (back|previous song|previous)$");
 
