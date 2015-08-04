@@ -15,7 +15,7 @@ Responder = (function() {
 		// Orginal version for botId detection and spotify uri parsing
 		var originalText = message.text;
 		
-		// Is it worth creating different regexes instead of doing indexOf() on the string?
+		// Makes updating what criteria works for bot commands now.
 		var playPattern = new RegExp("^<@" + botId + ">:? (play|search|start)(.*)$");
 		var stopPattern = new RegExp("^<@" + botId + ">:? (stop|stop song|stop playing)$");
 		var currPattern = new RegExp("^<@" + botId + ">:? (now playing|currently playing|current|currently|now)$");
