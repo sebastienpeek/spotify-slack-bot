@@ -1,7 +1,7 @@
 // Slack Bot template
 var Slack, autoMark, autoReconnect, slack, token, Responder, listening, Responder, botId;
 Slack = require('slack-client');
-Responder = require('./responder.js');
+Responder = require('./responder/responder.js');
 token = 'xoxb-8424019431-t2XR3PJdVOM2FKzaAM96koba';
 autoReconnect = true;
 autoMark = true;

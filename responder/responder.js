@@ -1,10 +1,12 @@
 var Responder;
 
-var ScriptRunner = require('./scriptrunner.js');
+var ScriptRunner = require('./spotify/spotify_scripts.js');
+var SearchAPI = require('./spotify/web_api/search_api.js');
 
 Responder = (function() {
 
 	var scriptrunner = new ScriptRunner();
+	var searchAPI = new SearchAPI();
 
 	Responder.prototype.respondToMessage = function(message, userObject, botId, res) {
 		console.log("respondToMessage() - " + message);
@@ -38,7 +40,18 @@ Responder = (function() {
 								});	
 							} else {
 								// This is where we need to go and make a web request to the search API!
-								res("I can't currently search for songs, but I will be able to tomororw.");
+								var searchString = playMatch[2];
+								searchAPI.searchForString(searchString.substring(1), function(trackId) {
+									if (trackId != null) {
+										scriptrunner.playSong(trackId, function(callback) {
+											scriptrunner.getTrack(function(err, track) { 
+												var artist = track.artist;
+												var name = track.name;
+												res("Now playing " + name + " by " + artist);
+											});
+										});	
+									};
+								});
 							}
 						} else {
 							scriptrunner.play(function(callback) {
