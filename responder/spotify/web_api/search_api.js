@@ -9,29 +9,32 @@ SpotifySearchAPI = (function() {
 
 	SpotifySearchAPI.prototype.searchForString = function(string, callback) {
 		console.log("searchForString() - " + string);
-
-
+		
 		var path = "/v1/search?q="
 	 	var percentEncoded = encodeURIComponent(string);
 		
-		var trackName;
-		var artistName;
-		// User has provided artist name
+		var trackName
+		var artistName
+
+		// Check if user has provided artist
 	 	if (~string.indexOf("by")) {
 	 		artistName = string.substring(string.lastIndexOf("by")+3,string.length);
 	 		trackName = string.substring(string.lastIndexOf("by"), -string.length);
-	 		
+	 		path = path + "track:" + encodeURIComponent(trackName) + "artist:" + encodeURIComponent(artistName) + "&type=track";
+	 	} else if (~string.indexOf("from")) {
+	 		artistName = string.substring(string.lastIndexOf("from")+5,string.length);
+	 		trackName = string.substring(string.lastIndexOf("from"), -string.length);
 	 		path = path + "track:" + encodeURIComponent(trackName) + "artist:" + encodeURIComponent(artistName) + "&type=track";
 	 	} else {
 	 		path = path + percentEncoded + "&type=track";
 	 	}
 
-	 	console.log(path);
-
 		spotifyClient.get(path, function(err, req, res, obj) {
   			if (err) {
+  				// Probably should add error handling here...
   				console.log(err);
   			} else if (obj) {
+				// Look into making this faster, surely it is possible...
   				var tracks = obj.tracks;
   				if (tracks.items.length > 0) {
   					if (trackName != null) {

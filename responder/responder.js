@@ -1,11 +1,11 @@
 var Responder;
 
-var ScriptRunner = require('./spotify/spotify_scripts.js');
+var SpotifyScript = require('./spotify/spotify_scripts.js');
 var SearchAPI = require('./spotify/web_api/search_api.js');
 
 Responder = (function() {
 
-	var scriptrunner = new ScriptRunner();
+	var spotifyScript = new SpotifyScript();
 	var searchAPI = new SearchAPI();
 
 	Responder.prototype.respondToMessage = function(message, userObject, botId, res) {
@@ -14,10 +14,9 @@ Responder = (function() {
 		var text = message.text.toString().toLowerCase();
 		// Orginal version for botId detection and spotify uri parsing
 		var originalText = message.text;
-		// var playPattern = /^<@U08CG0KCP>:? (play|search|start)(.*)$/i;
 		
+		// Is it worth creating different regexes instead of doing indexOf() on the string?
 		var playPattern = new RegExp("^<@" + botId + ">:? (play|search|start)(.*)$");
-		console.log(playPattern);
 
 		if (message.type === 'message' && 
 			(text != null) && 
@@ -25,14 +24,16 @@ Responder = (function() {
 
 				if (~originalText.indexOf(botId)) {
 
+					// Before we do anything, we should probably check if Spotify is running, right?
+
 					var playMatch = playPattern.exec(originalText);
 					console.log(playMatch);
 					if (playMatch != null) {
 						if (playMatch[2] != '') {
 							if (~playMatch[2].indexOf("spotify:")) {
 								var trackId = originalText.replace(/.*\<|\>/gi,'');
-								scriptrunner.playSong(trackId, function(callback) {
-									scriptrunner.getTrack(function(err, track) { 
+								spotifyScript.playSong(trackId, function(callback) {
+									spotifyScript.getTrack(function(err, track) { 
 										var artist = track.artist;
 										var name = track.name;
 										res("Now playing " + name + " by " + artist);
@@ -43,19 +44,21 @@ Responder = (function() {
 								var searchString = playMatch[2];
 								searchAPI.searchForString(searchString.substring(1), function(trackId) {
 									if (trackId != null) {
-										scriptrunner.playSong(trackId, function(callback) {
-											scriptrunner.getTrack(function(err, track) { 
+										spotifyScript.playSong(trackId, function(callback) {
+											spotifyScript.getTrack(function(err, track) { 
 												var artist = track.artist;
 												var name = track.name;
 												res("Now playing " + name + " by " + artist);
 											});
 										});	
-									};
+									} else {
+										res("Sorry, I couldn't find the song you were looking for. Try again!")
+									}
 								});
 							}
 						} else {
-							scriptrunner.play(function(callback) {
-								scriptrunner.getTrack(function(err, track) { 
+							spotifyScript.play(function(callback) {
+								spotifyScript.getTrack(function(err, track) { 
 									var artist = track.artist;
 									var name = track.name;
 									res("Now playing " + name + " by " + artist);
@@ -65,9 +68,9 @@ Responder = (function() {
 					} else {
 						if (~text.indexOf("now playing") || ~text.indexOf("currently playing") || 
 						~text.indexOf("current")) {
-							scriptrunner.getState(function(err, state) {
+							spotifyScript.getState(function(err, state) {
 								if (~state.indexOf("playing")) {
-									scriptrunner.getTrack(function(err, track) { 
+									spotifyScript.getTrack(function(err, track) { 
 										var artist = track.artist;
 										var name = track.name;
 										res("Currently listening to " + name + " by " + artist);
@@ -78,13 +81,13 @@ Responder = (function() {
 							})
 						} else if (~text.indexOf("stop song") || ~text.indexOf("stop playing") || 
 							~text.indexOf("stop")) {
-								scriptrunner.stop(function(callback) {
+								spotifyScript.stop(function(callback) {
 									res("Stopping!");
 								});
 						} else if (~text.indexOf("next song") || ~text.indexOf("next") || 
 							~text.indexOf("forward") || ~text.indexOf("skip")) {
-								scriptrunner.next(function(callback) {
-									scriptrunner.getTrack(function(err, track) { 
+								spotifyScript.next(function(callback) {
+									spotifyScript.getTrack(function(err, track) { 
 											var artist = track.artist;
 											var name = track.name;
 											res("Now playing " + name + " by " + artist);
@@ -92,11 +95,11 @@ Responder = (function() {
 								});
 						} else if (~text.indexOf("previous song") || ~text.indexOf("previous") || 
 							~text.indexOf("back")) {
-								scriptrunner.stop(function(callback) {
-									scriptrunner.previous(function(callback) {
-										scriptrunner.previous(function(callback) {
-											scriptrunner.play(function(callback) {
-												scriptrunner.getTrack(function(err, track) { 
+								spotifyScript.stop(function(callback) {
+									spotifyScript.previous(function(callback) {
+										spotifyScript.previous(function(callback) {
+											spotifyScript.play(function(callback) {
+												spotifyScript.getTrack(function(err, track) { 
 													var artist = track.artist;
 													var name = track.name;
 													res("Now playing " + name + " by " + artist);
