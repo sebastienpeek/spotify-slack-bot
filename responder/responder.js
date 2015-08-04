@@ -17,6 +17,7 @@ Responder = (function() {
 		
 		// Makes updating what criteria works for bot commands now.
 		var playPattern = new RegExp("^<@" + botId + ">:? (play|search|start)(.*)$");
+		var searchPattern = new RegExp("^@" + botId + ">:? (search|find)(.*)$");
 		var stopPattern = new RegExp("^<@" + botId + ">:? (stop|stop song|stop playing)$");
 		var currPattern = new RegExp("^<@" + botId + ">:? (now playing|currently playing|current|currently|now)$");
 		var nextPattern = new RegExp("^<@" + botId + ">:? (next|next song|forward|skip)$");
@@ -30,6 +31,7 @@ Responder = (function() {
 
 					// Before we do anything, we should probably check if Spotify is running, right?
 					var playMatch = playPattern.exec(originalText);
+					var searchMatch = searchPattern.exec(originalText);
 					var stopMatch = stopPattern.exec(originalText);
 					var currMatch = currPattern.exec(originalText);
 					var nextMatch = nextPattern.exec(originalText);
@@ -71,6 +73,35 @@ Responder = (function() {
 									res("Now playing " + name + " by " + artist);
 								});
 							});
+						}
+					} else if (searchMatch != null) {
+						if (searchMatch[2] != '') {
+							if (~searchMatch[2].indexOf("spotify:")) {
+								var trackId = originalText.replace(/.*\<|\>/gi,'');
+								spotifyScript.playSong(trackId, function(callback) {
+									spotifyScript.getTrack(function(err, track) { 
+										var artist = track.artist;
+										var name = track.name;
+										res("Now playing " + name + " by " + artist);
+									});
+								});	
+							} else {
+								// This is where we need to go and make a web request to the search API!
+								var searchString = searchMatch[2];
+								searchAPI.searchForString(searchString.substring(1), function(trackId) {
+									if (trackId != null) {
+										spotifyScript.playSong(trackId, function(callback) {
+											spotifyScript.getTrack(function(err, track) { 
+												var artist = track.artist;
+												var name = track.name;
+												res("Now playing " + name + " by " + artist);
+											});
+										});	
+									} else {
+										res("Sorry, I couldn't find the song you were looking for. Try again!")
+									}
+								});
+							}
 						}
 					} else if (currMatch != null) {
 
