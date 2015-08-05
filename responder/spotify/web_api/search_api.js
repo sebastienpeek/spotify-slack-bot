@@ -38,15 +38,9 @@ SpotifySearchAPI = (function() {
   				var tracks = obj.tracks;
   				if (tracks.items.length > 0) {
   					if (trackName != null) {
-  						for (var i = tracks.items.length - 1; i >= 0; i--) {
-  							var track = tracks.items[i];
-  							var trackRespName = track.name.toLowerCase();
-  							console.log(trackRespName);
-  							if (~trackRespName.indexOf(trackName)) {
-  								callback(track.uri);
-  								return;
-  							}
-						}
+						var track = tracks.items[0];
+						var trackRespName = track.name.toLowerCase();
+						callback(track.uri);
   					} else {
   						var track = tracks.items[0]
   						callback(track.uri)

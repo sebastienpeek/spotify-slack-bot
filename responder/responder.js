@@ -9,7 +9,7 @@ Responder = (function() {
 	var searchAPI = new SearchAPI();
 
 	Responder.prototype.respondToMessage = function(message, userObject, botId, res) {
-		console.log("respondToMessage() - " + message);
+		
 		// Lowercase version for easy parsing
 		var text = message.text.toString().toLowerCase();
 		// Orginal version for botId detection and spotify uri parsing
@@ -28,6 +28,8 @@ Responder = (function() {
 			(message.channel != null)) {
 
 				if (~originalText.indexOf(botId)) {
+					
+					console.log("respondToMessage() - " + message);
 
 					// Before we do anything, we should probably check if Spotify is running, right?
 					var playMatch = playPattern.exec(originalText);
@@ -54,11 +56,13 @@ Responder = (function() {
 								searchAPI.searchForString(searchString.substring(1), function(trackId) {
 									if (trackId != null) {
 										spotifyScript.playSong(trackId, function(callback) {
-											spotifyScript.getTrack(function(err, track) { 
+
+											setTimeout(spotifyScript.getTrack(function(err, track) {
 												var artist = track.artist;
 												var name = track.name;
 												res("Now playing " + name + " by " + artist);
-											});
+											}), 10000);
+
 										});	
 									} else {
 										res("Sorry, I couldn't find the song you were looking for. Try again!")
