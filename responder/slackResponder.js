@@ -1,14 +1,14 @@
-var Responder;
+var SlackResponder;
 
 var SpotifyScript = require('./spotify/spotify_scripts.js');
 var SearchAPI = require('./spotify/web_api/search_api.js');
 
-Responder = (function() {
+SlackResponder = (function() {
 
 	var spotifyScript = new SpotifyScript();
 	var searchAPI = new SearchAPI();
 
-	Responder.prototype.respondToMessage = function(message, userObject, botId, res) {
+	SlackResponder.prototype.respondToMessage = function(message, userObject, botId, res) {
 		
 		// Lowercase version for easy parsing
 		var text = message.text.toString().toLowerCase();
@@ -158,4 +158,4 @@ Responder = (function() {
 
 });
 
-module.exports = Responder;
+module.exports = SlackResponder;

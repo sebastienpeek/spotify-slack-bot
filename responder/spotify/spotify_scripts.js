@@ -8,8 +8,9 @@ var ScriptRunner = (function() {
 		track: {
 		    file: 'get_track.applescript'
 		},
-		state:
-			'tell application "Spotify" to player state',
+		state: {
+			file: 'get_state.applescript'
+		},
 		play:
 		    'tell application "Spotify" to play',
 		playSong:
